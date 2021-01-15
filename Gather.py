@@ -232,8 +232,8 @@ Silver=Metal('Silver')
 conn=smtplib.SMTP('smtp.gmail.com', 587)
 conn.ehlo()
 conn.starttls()
-conn.login('ddiazsouto@gmail.com', 'alvwtudkkinbadgk')
-conn.sendmail('ddiazsouto@gmail.com', 'daniel.souto@laughtondigital.com', 'Subject: Morning Report \n\nGood morning motherfucker!\n\nWhat a great day to make money with this prices\n\nGold is: {}oz\nSilver is: {}\n\n\nGold to Silver ratio: {}\n\n\nScraped on {}'.format(Au, Ag, Au2Ag, time.ctime()))# ignaa91@gmail.com
+conn.login('email@gmail.com', 'Password')
+conn.sendmail('ddiazsouto@gmail.com', 'daniel.souto@laughtondigital.com', 'Subject: Morning Report \n\nGood morning!\n\nGold is: {}oz\nSilver is: {}\n\n\nGold to Silver ratio: {}\n\n\nScraped on {}'.format(Au, Ag, Au2Ag, time.ctime()))# ignaa91@gmail.com
 
 conn.quit()
 
