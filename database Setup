@@ -1,0 +1,9 @@
+SQL code to setup the database:
+
+mysql> create table Silver ( Commodity VARCHAR(10) DEFAULT 'SILVER'
+    -> Date DATE NOT NULL DEFAULT (CURRENT_DATE),
+    -> PriceUSD FLOAT,
+    -> InflationUSD FLOAT,
+    -> PriceGBP FLOAT,	
+    -> InflationGBP FLOAT,					# Here please, important
+    -> Au2Ag_ratio FLOAT, PRIMARY KEY(Date));
