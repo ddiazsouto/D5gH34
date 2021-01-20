@@ -1,0 +1,137 @@
+
+import urllib.request
+import time
+from bs4 import BeautifulSoup
+import smtplib
+import pymysql
+
+
+user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
+headers={'User-Agent':user_agent,} 
+
+def unscape(stringing):
+
+	stringing = stringing.replace('&amp;', '&')
+
+	return stringing
+
+def cut(intstring):
+
+	s='href="'       #                                                     This function extracts the urls of individual houses when 
+	s2='"><img'      #                                                       given function Get (which is the main page)
+	out= intstring[intstring.index(s)+len(s):intstring.index(s2)]
+
+	return out
+
+
+
+def Get(url):																# Scraps the main page containing the results of a search
+
+	Buffer=[]
+
+	request=urllib.request.Request(url,None,headers) #The assembled request
+	html = urllib.request.urlopen(request)
+	bs=BeautifulSoup(html.read(), 'html.parser')
+	output=bs.find_all({'a'}, {'data-testid': 'listing-details-image-link'})
+
+	
+	for i in output:									#      Gathers the links of the houses and adds them into the list 
+														#        that it then returns.
+			
+		Buffer.append(cut(str(i)))
+
+	
+	
+	return Buffer
+
+
+
+
+def Borough(place):
+
+	secHouses=[]
+	mainHouses=[]
+
+	
+	
+	request=urllib.request.Request(place, None, headers)
+	html=urllib.request.urlopen(request)
+	bs=BeautifulSoup(html.read(), 'html.parser')
+
+
+
+	select=bs. find_all('a', {'class':'css-7lz865-StyledPaginationLink eaoxhri5'})
+	BNext=select[len(select)-1]  
+	StNext=str(BNext)   				#We equal BNext to the Next button and turn it into string
+
+
+	condition1=str(BNext.get_text())												# we create two conditions to check if we are or not in the last page 
+	condition2=StNext[StNext.index('aria-disabled="')+15:StNext.index('aria-disabled="')+20]   #   and if we are looking at the right place   
+
+	try:
+		NextPageUrl='https://www.zoopla.co.uk'+StNext[StNext.index('href="')+6:StNext.index('">Next')]	
+
+	except:
+
+		NextPageUrl=''
+
+	if 'Next' in condition1 and 'false' in condition2:
+
+		a=0
+		print('I just run')
+
+		
+
+	return unscape(NextPageUrl)
+
+
+
+
+
+
+	
+
+
+def Dive(link):
+																			#  Crawls the links gathered from the search in Get
+	Info=[]
+																			#   and extracts the desired information
+	request=urllib.request.Request(link, None, headers)
+	html=urllib.request.urlopen(request)
+	bs=BeautifulSoup(html.read(), 'html.parser')
+	output=bs.find('p', {'class':'ui-pricing__main-price ui-text-t4'})
+
+	return str(output.get_text())
+
+	#class="ui-pricing__main-price ui-text-t4"
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Here we will code the execution
+
+
+
+
+
+Have=Borough('url from bebsite')
+
+
+
+
+
+
+
+print(Dive('URL from website'))
+
+print(Have)
+print(Borough(Have))
