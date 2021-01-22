@@ -28,7 +28,7 @@ def USDtoGBP(url):
 			
 	return output
 
-USD2GBP=float(USDtoGBP('https://www.dollars2pounds.com/').find('span', {'id':'ratesC1Value'}).get_text())
+USD2GBP=float(USDtoGBP('****').find('span', {'id':'ratesC1Value'}).get_text())    # <--- Page1
 
 
 #Comodities --- Oil
@@ -49,7 +49,7 @@ def OilBrent(url):
 		
 	return float(output[2].get_text())
 
-OilBrent=OilBrent('https://oilprice.com/oil-price-charts/')
+OilBrent=OilBrent('****')     # <----- Page2 
 
 
 
@@ -68,7 +68,7 @@ def OilWTI(url):
 		
 	return float(output[2].get_text())
 
-OilWTI=OilWTI('https://oilprice.com/oil-price-charts/')    #In USD
+OilWTI=OilWTI('****')    # <---- Page2
 
 
 
@@ -86,7 +86,7 @@ def OpenFTSE100(url):
 
 	return output
 
-ftse100=OpenFTSE100('https://www.wsj.com/market-data/quotes/index/UK/UKX/historical-prices')
+ftse100=OpenFTSE100('*****')  # <---- Page3
 
 
 #Getting the DJIA - Dow Jones Industrial Average  --> Index
@@ -101,7 +101,7 @@ def OpenDJIA(url):
 
 	return float(output)
 
-DJIA=OpenDJIA('https://www.wsj.com/market-data/quotes/index/DJIA')
+DJIA=OpenDJIA('****')       # <---- Page4
 
 
 # Silver and Gold
@@ -116,10 +116,10 @@ def Open(url):
 
 	return output
 
-Ag=float(Open("https://www.gold.co.uk/silver-price/"))
+Ag=float(Open("****"))      # <---- Page5
 
 
-Au=str(Open("https://www.gold.co.uk/gold-price/"))
+Au=str(Open("****"))      # <----Page6
 buff=''
 for char in Au:
 	if char != ',':
@@ -159,7 +159,7 @@ def Openpaas(url):
 	return float(output)
 
 
-PAASprice=Openpaas('https://www.panamericansilver.com/')   #   Pan American Silver Stock  ===> PAASprice in USD
+PAASprice=Openpaas('****')   #   Pan American Silver Stock  ===> Page7
 
 
 
@@ -174,7 +174,7 @@ PAASprice=Openpaas('https://www.panamericansilver.com/')   #   Pan American Silv
 # 	return float(output)
 
 
-# BarrickPrice=Openbarrick('https://markets.businessinsider.com/stocks/gold-stock')    # BarrickGold   ====> BarrickPrice in USD
+# BarrickPrice=Openbarrick('****')    # BarrickGold   ====> Page8
 
 
 
@@ -233,7 +233,7 @@ conn=smtplib.SMTP('smtp.gmail.com', 587)
 conn.ehlo()
 conn.starttls()
 conn.login('email@gmail.com', 'Password')
-conn.sendmail('ddiazsouto@gmail.com', 'daniel.souto@laughtondigital.com', 'Subject: Morning Report \n\nGood morning!\n\nGold is: {}oz\nSilver is: {}\n\n\nGold to Silver ratio: {}\n\n\nScraped on {}'.format(Au, Ag, Au2Ag, time.ctime()))# ignaa91@gmail.com
+conn.sendmail('Daniel-notrealemail@gmail.com', 'Subject: Morning Report \n\nGood morning!\n\nGold is: {}oz\nSilver is: {}\n\n\nGold to Silver ratio: {}\n\n\nScraped on {}'.format(Au, Ag, Au2Ag, time.ctime()))# 
 
 conn.quit()
 
@@ -273,7 +273,7 @@ if Ag<19:
 
 #		Insert in DATABASE
 
-Make=pymysql.connect(host='127.0.0.1', user='root', passwd='Buddhassister22', db='mysql')
+Make=pymysql.connect(host='127.0.0.1', user='root', passwd='****', db='mysql')
 MySQL=Make.cursor()
 
 # 				First price of Silver
