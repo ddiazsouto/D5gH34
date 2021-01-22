@@ -139,7 +139,7 @@ MySQL.execute('USE Database')       <--- Change Database Name
 for i in range(len(year)):
 
 	try:
-		MySQL.execute('INSERT INTO gold(Date, PriceUSD) VALUES ({}, {});'.format(year[i], rate[i]))          <--- This is assuming that Table name is (Gold OR gold OR GOLD...)
+		MySQL.execute('INSERT INTO gold(Date, InflationUSD) VALUES ({}, {});'.format(year[i], rate[i]))          <--- This is assuming that Table name is (Gold OR gold OR GOLD...)
 		
 	except:
 		print('Excluding: ')
@@ -239,7 +239,7 @@ MySQL.execute('USE portfolio')                                 <------- Change D
 for i in range(len(year)):
 
 	try:
-		MySQL.execute('UPDATE Gold SET PriceUSD={} WHERE Date={};'.format(rate[i], year[i]))           <----   This assumes the table name is (Gold OR gold OR GOLD...)
+		MySQL.execute('UPDATE Gold SET InflationUSD={} WHERE Date={};'.format(rate[i], year[i]))           <----   This assumes the table name is (Gold OR gold OR GOLD...)
 		
 	except:
 		print('Excluding: ')
