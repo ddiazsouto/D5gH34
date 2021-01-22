@@ -9,11 +9,38 @@ import pymysql
 user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
 headers={'User-Agent':user_agent,} 
 
+
+class Stack():
+    
+    def __init__(self):
+        self.item={}   
+        
+    def pop(self):
+
+    	return self.item.popitem()
+        
+    
+    def push(self, n, m):
+        
+        z={n:m}
+        
+        self.item.update(z)
+
+    def size(self):
+
+    	return len(self.item)
+
+
+
+
+
+
 def unscape(stringing):
 
 	stringing = stringing.replace('&amp;', '&')
 
 	return stringing
+
 
 def cut(intstring):
 
@@ -42,7 +69,7 @@ def Get(url):																# Scraps the main page containing the results of a 
 
 	
 	
-	return Buffer
+	return Buffer			                                  # returns a list with the URLs
 
 
 
@@ -52,38 +79,45 @@ def Borough(place):
 	secHouses=[]
 	mainHouses=[]
 
+	print('loading')
+
+	def recurPages(page):
+
+		print('.')
+
+		secHouses=Get(page)
+		for i in secHouses: mainHouses.append(i)
+		secHouses=[]
+
+		request=urllib.request.Request(page, None, headers)
+		html=urllib.request.urlopen(request)
+		bs=BeautifulSoup(html.read(), 'html.parser')
+
+		select=bs. find_all('a', {'class':'css-7lz865-StyledPaginationLink eaoxhri5'})
+		BNext=select[len(select)-1]  
+		StNext=str(BNext)   				#We equal BNext to the Next button and turn it into string
+
+
+		condition1=str(BNext.get_text())									   	    # we create two conditions to check if we are or not in the last page 
+		condition2=StNext[StNext.index('aria-disabled="')+15:StNext.index('aria-disabled="')+20]                            #   and if we are looking at the right place   
+
+		try:
+			NextPageUrl='****'+StNext[StNext.index('href="')+6:StNext.index('">Next')]	         #  <--- **** == Cut1
+		except:
+			NextPageUrl=''
+
+		if 'Next' in condition1 and 'false' in condition2:
+
+			recurPages(unscape(NextPageUrl))
+
+
+		return unscape(NextPageUrl)
+
+
+	recurPages(place)
 	
-	
-	request=urllib.request.Request(place, None, headers)
-	html=urllib.request.urlopen(request)
-	bs=BeautifulSoup(html.read(), 'html.parser')
-
-
-
-	select=bs. find_all('a', {'class':'css-7lz865-StyledPaginationLink eaoxhri5'})
-	BNext=select[len(select)-1]  
-	StNext=str(BNext)   				#We equal BNext to the Next button and turn it into string
-
-
-	condition1=str(BNext.get_text())												# we create two conditions to check if we are or not in the last page 
-	condition2=StNext[StNext.index('aria-disabled="')+15:StNext.index('aria-disabled="')+20]   #   and if we are looking at the right place   
-
-	try:
-		NextPageUrl='https://www.zoopla.co.uk'+StNext[StNext.index('href="')+6:StNext.index('">Next')]	
-
-	except:
-
-		NextPageUrl=''
-
-	if 'Next' in condition1 and 'false' in condition2:
-
-		a=0
-		print('I just run')
-
-		
-
-	return unscape(NextPageUrl)
-
+	return mainHouses		#it returns a list with the url of the houses in that borough // after iterating through pages
+							#         the format of the pages is:     -f{}/.........    ->>> need to concat to website
 
 
 
@@ -117,21 +151,55 @@ def Dive(link):
 
 
 
-# Here we will code the execution
+# Here we will code the implementation
 
 
 
+#  Hard coding the 32 Boroughs
+
+Cdn=''
+Grwch=''
+Hck=''
+Hmmth=''
+Isl=''
+KChels=''
+Lbth=''
+Lwshm=''
+Sthwk=''
+TowH=''
+Wdswth=''
+Wmst=''
+BarkD=''
+Barnt=''
+Bxly=''
+Brent=''
+Bromly=''
+Croy=''
+Eal=''
+Enfd=''
+Hgey=''
+Hrow=''
+Hvg=''
+Hldn=''
+Hslw=''
+KuT=''
+Mton=''
+Nwham=''
+Rbg=''
+RuT=''
+Sutt=''
+Wfor=''
 
 
-Have=Borough('url from bebsite')
+Bghs={'Candem':Cdn, 'Greenwich':Grwch, 'Hackney':Hck, 'Hammersmith':Hmmth, 'Islington':Isl, 'Kensington&Chelsea':KChels, 'Lambeth':Lbth, 'Lewisham':Lwshm, 'Southwark':Sthwk, 'TowerHamlets':TowH}
 
 
+Have=Borough('URL')				# <---- URL1
 
 
-
-
-
-print(Dive('URL from website'))
+print(Dive('URL')) 				 # Here just to check manually and visually <---- URL2
 
 print(Have)
-print(Borough(Have))
+#print(Get(Have))
+
+
