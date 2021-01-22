@@ -1,0 +1,252 @@
+
+
+import urllib.request
+
+from bs4 import BeautifulSoup
+import pymysql
+import time
+
+#               This crawler gathers data from 1968 to 2018
+#					from https:// WEBSITE
+#						And places it in the portfolio analysis database, table gold
+#									07/09/2020		Dan
+
+
+year=[]
+rate=[]
+NotTaken=[]
+
+def limpia(year):
+
+	struct=[]
+	item=''
+	output=''
+
+	for char in year:
+		if char !=' ':
+			if char!=',':
+				item=item+char			
+		else:
+			struct.append(item)
+			item=''
+	struct.append(item)
+
+
+	Months={'January':'01', 'February':'02', 'March':'03', 'April':'04', 'May':'05', 'June':'06', 'July':'07', 'August':'08', 'September':'09', 'October':'10', 'November':'11', 'December':'12'}
+
+	for month in Months:
+		if struct[0]==month:
+			struct[0]=Months.get(month)
+
+			
+	count=0
+	output=''
+	a=''
+	b=''
+	c=''
+	for i in struct:
+		if count==0:
+			b=i
+			
+		if count==1:
+			c=i
+
+			if len(c)==1:
+				c='0'+c
+
+		if count==2:
+			a=i
+			
+		count=count+1
+
+	output=a+b+c
+
+	return output
+
+
+
+
+
+def pulir(price):
+	output=''
+	for char in price:
+		if char!='$':
+			if char!=' ':
+				if char!=',':
+					if char!='o':
+						if char!='z':
+							output=output+char
+
+	return float(output)
+
+
+def USDtoGBP(url):
+
+	user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
+	headers={'User-Agent':user_agent,} 
+	request=urllib.request.Request(url,None,headers)            #The assembled request
+	html = urllib.request.urlopen(request)
+	bs=BeautifulSoup(html.read(), 'html.parser')
+	chain=bs.find_all('tbody')[2].find_all('tr')
+
+	for block in chain:
+		date=limpia(block.td.p.get_text())
+		try:
+			price=block.find_all('td')[1].p.get_text()
+			price=pulir(price)
+		except:
+			price=price
+
+		print(date, price)
+		year.append(date)
+		rate.append(price)
+	
+
+	return chain
+
+
+	
+current=[1968,1969,1970,1971,1972,1973,1974,1975,1976,1977,1978,1979,1980,1981,1982,1983,1984,1985,1986,1987,1988,1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017]
+
+
+for i in current:
+	try:
+		USD2GBP=USDtoGBP('++++{}'.format(str(i)))             <----- Website1 == ++++
+		# time.sleep(0.1)
+	except:
+		NotTaken.append(i)
+		try:
+			USD2GBP=USDtoGBP('++++{}'.format(str(i)))           <----- Website1 == ++++
+			# time.sleep(0.1)
+		except:
+			NotTaken.append('reiteration didnt work')
+
+
+			
+print(NotTaken)       # 		probably innecesary
+
+  
+
+
+"""
+			#   Download to the Database is muted so the code can be run for preview of Data
+
+Make=pymysql.connect(host='127.0.0.1', user='root', passwd='*******', db='mysql')
+MySQL=Make.cursor()
+
+MySQL.execute('USE Database')       <--- Change Database Name
+
+for i in range(len(year)):
+
+	try:
+		MySQL.execute('INSERT INTO gold(Date, PriceUSD) VALUES ({}, {});'.format(year[i], rate[i]))          <--- This is assuming that Table name is (Gold OR gold OR GOLD...)
+		
+	except:
+		print('Excluding: ')
+		print(year[i], rate[i])
+
+Make.commit()
+
+MySQL.execute('SELECT * FROM gold')                                                                     <------Same assumption with the table
+print(MySQL.fetchall())
+
+
+Make.close()
+MySQL.close()
+
+
+"""
+
+
+#		This second half was copied and pasted from another scrapper 
+#				so it all can be run from one script.
+
+#		Function names were changed not to interact with each other
+
+#		Plenty of redundancies can be found
+#									- Code is not sexy,
+#										But it works
+
+
+
+year=[]
+rate=[]
+
+def clean(year):
+
+	Sel={'Jan':'01', 'Feb':'02', 'Mar':'03', 'Apr':'04', 'May':'05', 'Jun':'06', 'Jul':'07', 'Aug':'08', 'Sep':'09', 'Oct':'10', 'Nov':'11', 'Dec':'12'}
+	struct=[]
+	
+	item=''
+	
+	for char in year:
+		
+		if char !=' ':
+			item=item+char
+		else:
+			buff=Sel.get(item)
+			struct.append(buff+'01')
+			item=''
+	struct.append(item)
+
+	return struct[1]+struct[0]
+
+
+
+def clear(price):
+	output=''
+
+	for char in price:
+		if char != ',':
+			output=output+char
+	return float(output)
+
+
+
+def Grab(url):
+
+	user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
+	headers={'User-Agent':user_agent,} 
+	request=urllib.request.Request(url,None,headers) #The assembled request
+	html = urllib.request.urlopen(request)
+	bs=BeautifulSoup(html.read(), 'html.parser')
+	chain=bs.find_all('tr', {'align':'right'})
+
+	
+	for n in range(328, 360):
+
+		year.append(clean(chain[n].find_all('td')[0].get_text() ))  # date
+		rate.append(clear(chain[n].find_all('td')[1].get_text() ))  # price
+
+				
+	return chain
+
+
+
+
+USD2GBP=Grab('----')         <---- Website2 == ----
+print(year)
+print(rate)
+
+"""
+			#   Download to the Database is muted so the code can be run for preview of Data		
+
+Make=pymysql.connect(host='127.0.0.1', user='root', passwd='*****', db='mysql')
+MySQL=Make.cursor()
+
+MySQL.execute('USE portfolio')                                 <------- Change Database name
+
+for i in range(len(year)):
+
+	try:
+		MySQL.execute('UPDATE Gold SET PriceUSD={} WHERE Date={};'.format(rate[i], year[i]))           <----   This assumes the table name is (Gold OR gold OR GOLD...)
+		
+	except:
+		print('Excluding: ')
+		print(year[i], rate[i])
+
+Make.commit()
+
+Make.close()
+MySQL.close()
+"""
