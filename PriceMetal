@@ -1,0 +1,138 @@
+
+import urllib.request
+import time
+from bs4 import BeautifulSoup
+import smtplib
+import pymysql
+
+
+
+
+year=[]
+rate=[]
+
+
+
+def Extract(string):
+
+	Buffer=[]		# Both storage elemnts
+	word=''
+
+	Switch=[]			#control element
+
+	for char in string:
+
+		if char == '"' and len(Switch)==0:
+
+			Switch.append(char)
+
+		elif char=='"' and len(Switch)==1:				#Takes everythin inside "" and puts it into a list
+
+			Buffer.append(word)
+			word=''
+			Switch.pop()
+
+
+		if char!='"' and len(Switch)==1:
+
+			word=word+char
+
+			
+
+	return Buffer						#this list, in Storage elements 
+			
+
+
+
+
+
+
+
+def cleandate(date):
+
+	Buffer=''
+
+	for char in date:
+
+		if char!='-':
+
+			Buffer=Buffer+char
+
+	return Buffer
+
+
+
+
+
+
+
+def Pair(List):
+
+
+	for i, j in zip(List[:-1], List[1:]):
+
+		if i=='date' and len(j)==10:
+
+			year.append(cleandate(j))												#separates the date from the rate and chucks them away in their correct list in order
+
+		if i=='close' and len(j)>=1 and len(j)<20:
+
+			rate.append(j)
+
+	for e in range(3): rate.pop()			#Manually removing the last element of the list, didn't belong to desired data
+
+
+
+
+
+
+def Get(url):		# Scraps
+
+	user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
+	headers={'User-Agent':user_agent,} 
+	request=urllib.request.Request(url,None,headers) #The assembled request
+	html = urllib.request.urlopen(request)
+	bs=BeautifulSoup(html.read(), 'html.parser')
+	output=bs.find_all('script', {'type':'text/javascript'})[5]
+	
+	return output
+
+	
+
+
+Have=Get('&&&&')   #  <---- Website3
+
+
+Page=str(Have)					#Turned to string
+# print(Extract(Page))        # Origianl scraped text
+Pair(Extract(Page))
+
+print(year)
+print(rate)					#Double checking the output
+
+print(len(year))		#Double checking that both strings have the same size
+print(len(rate))
+
+
+"""
+Make=pymysql.connect(host='127.0.0.1', user='root', passwd='****', db='mysql')
+MySQL=Make.cursor()
+
+MySQL.execute('USE portfolio')
+
+for i in range(637):
+
+	try:
+		MySQL.execute('UPDATE Gold SET PriceUSD={} WHERE Date={};'.format(rate[i], year[i]))            # <--this has the UPDATE method, because we assume the database already has data inside
+																							                                                     	#			Make sure to run the code again with INSERT INTO method
+	except:
+		print('Excluding: ')
+		print(year[i], rate[i])
+
+Make.commit()
+
+Make.close()
+MySQL.close()
+
+
+"""
