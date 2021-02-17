@@ -3,6 +3,8 @@ This is a file that I have created with the purpose of posterior use
 This file can be changed, updated but not deleted
 I mean, it can be deleted, but it shouldn't
 
-I will add it but not merged or pushed yet
+So merging and throwing around branches is absolutely allowed.
 
-Dan
+NOT TO BE DELETED
+
+Daniel
